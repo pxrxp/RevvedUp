@@ -15,32 +15,26 @@ jobs:
         uses: docker/setup-buildx-action@v2
 
       - name: Build Docker image
-        run: |
-          docker build -t revved-up .
+        run: docker build -t revved-up .
 
-      - name: Build application
+      - name: Build Application
         run: |
           docker run --rm -v ${{ github.workspace }}:/workspace revved-up bash -c "
-            mkdir -p /workspace/build
-            cd /workspace/build
-            cmake .. -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON
+            mkdir -p /workspace/build &&
+            cd /workspace/build &&
+            cmake .. -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON &&
             make -j$(nproc)
           "
 
-      - name: Extract build output
+      - name: Package binary + assets
         run: |
-          container_id=$(docker create revved-up)
-          docker cp $container_id:/workspace/build/bin ./bin
-          docker rm $container_id
-
-      - name: Archive build
-        run: |
-          tar czf revved-up-linux.tar.gz -C bin .
+          tar czf revved-up-linux.tar.gz -C build/bin . -C assets .
 
       - name: Upload to GitHub Release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ github.ref_name }}
-          files: revved-up-linux.tar.gz
+          files: ./revved-up-linux.tar.gz
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
