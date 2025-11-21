@@ -18,6 +18,15 @@ jobs:
         run: |
           docker build -t revved-up .
 
+      - name: Build application
+        run: |
+          docker run --rm -v ${{ github.workspace }}:/workspace revved-up bash -c "
+            mkdir -p /workspace/build
+            cd /workspace/build
+            cmake .. -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON
+            make -j$(nproc)
+          "
+
       - name: Extract build output
         run: |
           container_id=$(docker create revved-up)
