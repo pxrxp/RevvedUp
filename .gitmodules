@@ -7,6 +7,3 @@
 [submodule "external/imgui-sfml"]
 	path = external/imgui-sfml
 	url = https://github.com/SFML/imgui-sfml.git
-[submodule "vcpkg"]
-	path = vcpkg
-	url = https://github.com/microsoft/vcpkg

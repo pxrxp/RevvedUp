@@ -14,7 +14,7 @@
 #include <memory>
 
 namespace {
-float DISTANCE_TO_WIN = 1500;
+float DISTANCE_TO_WIN = 1000;
 float DISTANCE_CONST = 100;
 float GHOST_ABOVE_THRESHOLD = 0.6f;
 }
@@ -35,7 +35,7 @@ PlayState::PlayState()
     timeText.setFillColor(sf::Color::White);
     sf::Vector2u windowSize = WindowManager::getWindow().getSize();
     timeText.setPosition(0.05f * windowSize.x,
-                         0.05f * windowSize.y);
+                         0.05f * windowSize.y); // 5% padding from top left
 
     distanceText.setFont(textFont);
     distanceText.setCharacterSize(20);
@@ -139,8 +139,8 @@ PlayState::update(const sf::Time& deltaTime)
         sf::Vector2f ghostPosition = ghost->getPositionPercentage();
         sf::Vector2f carPosition = car.getPositionPercentage();
 
-        if (ghostPosition.x >= carPosition.x - car.getWidthPercentage() / 4 &&
-            ghostPosition.x <= carPosition.x + car.getWidthPercentage() / 4 &&
+        if (ghostPosition.x >= carPosition.x - car.getWidthPercentage() / 6 &&
+            ghostPosition.x <= carPosition.x + car.getWidthPercentage() / 6 &&
             ghostPosition.y < carPosition.y) {
             ghostDetected = true;
             break;

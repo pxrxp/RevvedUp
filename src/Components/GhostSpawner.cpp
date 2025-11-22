@@ -3,12 +3,11 @@
 #include "Core/WindowManager.h"
 
 namespace {
-std::size_t MAX_GHOSTS = 3;
-float SPAWN_NEAR_CAR_BIAS = 0.0001f;
+std::size_t MAX_GHOSTS = 8;
+float SPAWN_NEAR_CAR_BIAS = 0.1f;
 int MAX_ATTEMPTS = 30;
-float MAX_LIFETIME_GHOST = 1.5f;
+float MAX_LIFETIME_GHOST = 1.0f;
 float OFFSET_CONST = 0.5f;
-float SPAWN_INTERVAL = 0.5f;
 }
 
 Ghost::Ghost(float x, float y)
@@ -49,6 +48,7 @@ GhostSpawner::GhostSpawner(float minX, float maxX, float fixedY)
   : minX(minX)
   , maxX(maxX)
   , fixedY(fixedY)
+  , spawnInterval(2.0f)
 {
 }
 
@@ -57,7 +57,10 @@ GhostSpawner::update(const sf::Time& deltaTime,
                      const sf::Vector2f& carPositionPercentage,
                      const float carWidthPercentage)
 {
-
+    if (spawnClock.getElapsedTime().asSeconds() >= spawnInterval) {
+        spawnGhost(carPositionPercentage, carWidthPercentage);
+        spawnClock.restart();
+    }
     for (auto it = ghosts.begin(); it != ghosts.end();) {
         (*it)->update(deltaTime);
         if ((*it)->lifetime >= MAX_LIFETIME_GHOST) {
@@ -65,12 +68,6 @@ GhostSpawner::update(const sf::Time& deltaTime,
         } else {
             ++it;
         }
-    }
-
-    spawnClock += deltaTime.asSeconds();
-    while (spawnClock >= SPAWN_INTERVAL) {
-        spawnGhost(carPositionPercentage, carWidthPercentage);
-        spawnClock -= SPAWN_INTERVAL;
     }
 }
 
@@ -84,6 +81,7 @@ void
 GhostSpawner::spawnGhost(const sf::Vector2f& carPositionPercentage,
                          const float carWidth)
 {
+    if (spawnClock.getElapsedTime().asSeconds() >= spawnInterval) {
         float x;
         bool validPosition = false;
         auto windowSize = WindowManager::getWindow().getSize();
@@ -114,3 +112,4 @@ GhostSpawner::spawnGhost(const sf::Vector2f& carPositionPercentage,
             }
         }
     }
+}
