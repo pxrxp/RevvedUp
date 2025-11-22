@@ -28,7 +28,7 @@ jobs:
 
       - name: Package binary + assets
         run: |
-          tar czf revved-up-linux.tar.gz -C build/bin . -C assets .
+          tar czf revved-up-linux.tar.gz -C build/bin .
 
       - name: Upload to GitHub Release
         uses: softprops/action-gh-release@v1
